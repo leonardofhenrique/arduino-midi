@@ -35,8 +35,8 @@ int CC[N_POTS] = { 11, 13, 15 };
 
 // LEDS
 
-const int N_LED = 2;
-byte ledPin[N_LED] = { 8, 10 };
+const int N_LED = 3;
+byte ledPin[N_LED] = { 8, 9, 16 };
 
 void setup() {
 
@@ -86,9 +86,13 @@ void readMidi() {
     } else if (message.byte3 == 97) {
       digitalWrite(8, LOW);
     } else if (message.byte3 == 98) {
-      digitalWrite(10, HIGH);
+      digitalWrite(9, HIGH);
     } else if (message.byte3 == 99) {
-      digitalWrite(10, LOW);
+      digitalWrite(9, LOW);
+    } else if (message.byte3 == 100) {
+      digitalWrite(16, HIGH);
+    } else if (message.byte3 == 101) {
+      digitalWrite(16, LOW);
     }
   } while (message.header != 0);
 }
