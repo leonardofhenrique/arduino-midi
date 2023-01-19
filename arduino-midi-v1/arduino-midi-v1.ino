@@ -1,8 +1,8 @@
 #include "MIDIUSB.h"
 
 // BOTOES
-const int N_BUTTON = 8;                                   // Numero total de botoes
-byte buttonPin[N_BUTTON] = { 2, 3, 4, 5, 6, 7, 15, 14 };  // Pinos digitais
+const int N_BUTTON = 9;                                   // Numero total de botoes
+byte buttonPin[N_BUTTON] = { 2, 3, 4, 5, 6, 7, 15, 14, 10 };  // Pinos digitais
 byte buttonState[N_BUTTON] = { 0 };
 byte buttonPState[N_BUTTON] = { 0 };
 unsigned long lastBounce[N_BUTTON] = { 0 };
@@ -28,10 +28,11 @@ int potTimeout = 300;
 
 int MIDI_CH = 0;  // 0-15
 int NN[N_BUTTON] = {};
-int primeiraNota = 30;
+int primeiraNN = 1;
 
 
-int CC[N_POTS] = { 11, 13, 15 };
+int CC[N_POTS] = {};
+int primeiroCC = 1;
 
 // LEDS
 
@@ -42,9 +43,15 @@ void setup() {
 
   Serial.begin(115200);
 
+  pinMode(10, INPUT_PULLUP);
+
   for (int i = 0; i < N_BUTTON; i++) {
-    NN[i] = primeiraNota;
-    primeiraNota = primeiraNota + 2;
+    NN[i] = primeiraNN;
+    primeiraNN = primeiraNN + 1;
+  }
+  for (int i = 0; i < N_POTS; i++) {
+    CC[i] = primeiroCC;
+    primeiroCC = primeiroCC + 1;
   }
   // delclarar os pinos do arduino
   for (int i = 0; i < N_BUTTON; i++) {
@@ -55,7 +62,6 @@ void setup() {
     pinMode(ledPin[i], OUTPUT);
   }
 }
-
 // - - - - - - - - - - - - - -
 
 void loop() {
@@ -71,16 +77,16 @@ void readMidi() {
   midiEventPacket_t message;
   do {
     message = MidiUSB.read();
-    // if (message.header !=0) {
-    //   Serial.print("Mensagem MIDI: ");
-    //   Serial.print(message.header);
-    //   Serial.print(" - ");
-    //   Serial.print(message.byte1);
-    //   Serial.print(" - ");
-    //   Serial.print(message.byte2);
-    //   Serial.print(" - ");
-    //   Serial.println(message.byte3);
-    // }
+    if (message.header !=0) {
+      Serial.print("Mensagem MIDI: ");
+      Serial.print(message.header);
+      Serial.print(" - ");
+      Serial.print(message.byte1);
+      Serial.print(" - ");
+      Serial.print(message.byte2);
+      Serial.print(" - ");
+      Serial.println(message.byte3);
+    }
     if (message.byte3 == 96) {
       digitalWrite(8, HIGH);
     } else if (message.byte3 == 97) {
